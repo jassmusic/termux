@@ -1,6 +1,8 @@
 #!/bin/sh
+
 # SJVA2 install for Termux-Ubuntu (64bit)
 # made by jassmusic @20.06.22
+
 echo ""
 echo "-- SJVA 0.2 Install for Termux-Ubuntu"
 echo "   from nVidia Shield Cafe --"

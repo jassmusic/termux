@@ -4,6 +4,12 @@
 # made by jassmusic @20.06.22
 # (modify from Neo-Oli/termux-ubuntu)
 
+echo ""
+echo "-- Termux-Ubuntu Install"
+echo "   from SJVA.me --"
+echo "   version 0.2.6.22"
+echo ""
+
 cd ~
 dir=termux-ubuntu
 folder=ubuntu-fs

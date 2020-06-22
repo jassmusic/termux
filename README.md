@@ -1,7 +1,5 @@
 # termux
 
-* termux에 유용한 프로그램을 Script로 제공합니다.
-
 - termux-ubuntu_install.sh : termux에 ubuntu-eoan을 설치
 - termux-ubuntu_sjva2_install.sh : termux-ubuntu에 sjva2를 설치
 - termux-ubuntu_with_sjva2_install.sh : termux에 ubuntu-eoan & sjva2를 설치

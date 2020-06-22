@@ -1,8 +1,13 @@
 #!/bin/sh
 
-# Termux-Ubuntu Install
+# Termux-Ubuntu with SJVA2 Install
 # made by jassmusic @20.06.22
-# (modify from Neo-Oli/termux-ubuntu)
+
+echo ""
+echo "-- SJVA2 Install for Termux-Ubuntu"
+echo "   from nVidia Shield Cafe --"
+echo "   version 0.2.6.22"
+echo ""
 
 cd ~
 curl -LO https://raw.githubusercontent.com/jassmusic/termux/master/termux-ubuntu_install.sh

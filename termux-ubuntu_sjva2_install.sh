@@ -65,7 +65,7 @@ echo ""
 echo "(Step7) Running file modify.."
 rm -f my_start.sh
 cat >> my_start.sh << 'EOM'
-#!/bin/bash
+#!/bin/sh
 
 if [ ! -f "export.sh" ] ; then
 cat <<EOF >export.sh

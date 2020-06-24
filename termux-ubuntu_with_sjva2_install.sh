@@ -112,7 +112,7 @@ rm -rf termux-ubuntu_sjva2_install.sh
 curl -LO https://raw.githubusercontent.com/jassmusic/termux/master/termux-ubuntu_sjva2_install.sh
 mv termux-ubuntu_sjva2_install.sh ~/termux-ubuntu/ubuntu-fs/home
 cat >> ~/termux-ubuntu/ubuntu-fs/root/.bash_profile << EOF
-bash termux-ubuntu_sjva2_install.sh
+bash /home/termux-ubuntu_sjva2_install.sh
 EOF
 ~/termux-ubuntu/start-ubuntu.sh
 fi

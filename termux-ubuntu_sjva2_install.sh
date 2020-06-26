@@ -56,7 +56,21 @@ echo ""
 
 echo "(Step6) SJVA2 pip setting.."
 cd SJVA2
+case `dpkg --print-architecture` in
+aarch64)
+archurl="64bit" ;;
+arm)
+archurl="32bit" ;;
+amd64)
+archurl="64bit" ;;
+i*86)
+archurl="32bit" ;;
+x86_64)
+archurl="64bit" ;;
+*)
+if [ ${archurl} == "32bit" ]; then
 sed -i 's/CFUNCTYPE(c_int)(lambda: None)/#CFUNCTYPE(c_int)(lambda: None)/' /usr/lib/python2.7/ctypes/__init__.py
+fi
 python -m pip install --upgrade pip
 pip install --upgrade setuptools
 pip install -r requirements.txt

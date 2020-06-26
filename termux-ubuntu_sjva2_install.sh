@@ -68,6 +68,8 @@ archurl="32bit" ;;
 x86_64)
 archurl="64bit" ;;
 *)
+archurl="32bit" ;;
+esac
 if [ ${archurl} == "32bit" ]; then
 sed -i 's/CFUNCTYPE(c_int)(lambda: None)/#CFUNCTYPE(c_int)(lambda: None)/' /usr/lib/python2.7/ctypes/__init__.py
 fi

@@ -226,7 +226,7 @@ echo "     service sjva2 restart"
 echo "     service sjva2 status"
 echo ""
 echo "Run SJVA with background..."
-sleep 1
+#sleep 1
 service sjva2 start
 echo ""
 EOF

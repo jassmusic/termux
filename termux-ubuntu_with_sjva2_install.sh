@@ -9,6 +9,8 @@ echo "   from nVidia Shield Cafe --"
 echo "   version 0.2.6.26"
 echo ""
 
+termux-wake-lock
+
 cd ~
 rm -rf termux-ubuntu_install.sh
 curl -LO https://raw.githubusercontent.com/jassmusic/termux/master/termux-ubuntu_install.sh
@@ -19,6 +21,8 @@ termux-wake-lock
 sshd
 ~/termux-ubuntu/start-ubuntu.sh
 EOF
+rm termux-ubuntu_install.sh
+
 cd ~
 rm -rf termux-ubuntu_sjva2_install.sh
 curl -LO https://raw.githubusercontent.com/jassmusic/termux/master/termux-ubuntu_sjva2_install.sh

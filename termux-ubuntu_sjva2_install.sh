@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # SJVA2 install for Termux-Ubuntu (64bit)
-# made by jassmusic @20.06.22
+# made by jassmusic @20.06.26
 
 echo ""
 echo "-- SJVA 0.2 Install for Termux-Ubuntu"
@@ -65,7 +65,7 @@ echo ""
 echo "(Step7) Running file modify.."
 rm -f my_start.sh
 cat >> my_start.sh << 'EOM'
-#!/bin/sh
+#!/bin/bash
 
 if [ ! -f "export.sh" ] ; then
 cat <<EOF >export.sh
@@ -217,6 +217,7 @@ echo ""
 echo "(Step9) Register SJVA2 to Autorun.."
 rm -f ~/.bash_profile
 cat >> ~/.bash_profile << 'EOF'
+echo ""
 echo "Welcome to Termux Ubuntu!"
 echo "e.g) SJVA manual instruction"
 echo "     service sjva2 start"
@@ -227,6 +228,7 @@ echo ""
 echo "Run SJVA with background..."
 sleep 1
 service sjva2 start
+echo ""
 EOF
 echo " done"
 echo ""

@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# SJVA2 install for Termux-Ubuntu (64bit)
-# made by jassmusic @20.06.26
+# SJVA2 install for Termux-Ubuntu (64bit/32bit)
+# made by jassmusic @20.06.26-1
 
 echo ""
 echo "-- SJVA 0.2 Install for Termux-Ubuntu"
@@ -56,6 +56,7 @@ echo ""
 
 echo "(Step6) SJVA2 pip setting.."
 cd SJVA2
+sed -i 's/CFUNCTYPE(c_int)(lambda: None)/#CFUNCTYPE(c_int)(lambda: None)/' /usr/lib/python2.7/ctypes/__init__.py
 python -m pip install --upgrade pip
 pip install --upgrade setuptools
 pip install -r requirements.txt

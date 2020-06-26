@@ -1,17 +1,19 @@
 #!/bin/sh
 
 # Termux-Alpine SJVA2 addset
-# made by jassmusic @20.06.25
+# made by jassmusic @20.06.26
 
 echo "kill filebrowser prpcess"
-ps ax | grep /data/db | grep /filebrowser | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
+pgrep -a filebrowser | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
+#ps ax | grep /data/db | grep /filebrowser | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
 echo " done"
 echo ""
 
 echo "(Step1) SJVA2 Running file modify.." 
+apk add bash
 rm -f /home/SJVA2/my_start.sh
 cat >> /home/SJVA2/my_start.sh << 'EOM'
-#!/bin/sh
+#!/bin/bash
 if [ ! -f "export.sh" ] ; then
 cat <<EOF >export.sh
 #!/bin/sh
@@ -75,7 +77,7 @@ COUNT=`expr $COUNT + 1`
 done 
 if [ "${RUN_FILEBROWSER}" == "true" ]; then
 #ps -eo pid,args | grep filebrowser | grep -v grep | awk '{print $1}' | xargs -r kill -9
-pgrep -a filebrowser | awk '{print $1}' | xargs -r kill -9
+pgrep -a filebrowser | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
 fi
 EOM
 chmod 777 /home/SJVA2/my_start.sh
@@ -116,6 +118,7 @@ if [ -z "$sjva2_running" ] || [ -z "$python_running" ]; then
 echo -n "Checking sjva2: "
 pgrep -a my_start | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
 ps ax | grep python | grep sjva.py | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
+pgrep -a filebrowser | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
 sleep 1
 echo "done"
 echo "sjva2 is not running (no process found)..."
@@ -124,6 +127,7 @@ fi
 echo -n "Killing sjva2: "
 pgrep -a my_start | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
 ps ax | grep python | grep sjva.py | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
+pgrep -a filebrowser | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
 sleep 1
 echo "done"
 ;;

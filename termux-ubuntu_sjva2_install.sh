@@ -6,7 +6,7 @@
 echo ""
 echo "-- SJVA 0.2 Install for Termux-Ubuntu"
 echo "   from nVidia Shield Cafe --"
-echo "   version 0.2.6.22"
+echo "   version 0.2.6.26-1 (32bit compatible)"
 echo ""
 sleep 1
 

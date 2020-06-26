@@ -138,7 +138,7 @@ done
 
 if [ "${RUN_FILEBROWSER}" == "true" ]; then
     #ps -eo pid,args | grep filebrowser | grep -v grep | awk '{print $1}' | xargs -r kill -9
-    pgrep -a filebrowser | awk '{print $1}' | xargs -r kill -9
+    pgrep -a filebrowser | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
 fi
 EOM
 chmod 777 my_start.sh
@@ -177,16 +177,18 @@ fi
 stop)
 if [ -z "$sjva2_running" ] || [ -z "$python_running" ] ; then
 echo -n " Checking sjva2: "
-"$sjva2_running" | xargs kill -9 >/dev/null 2>&1
-"$python_running" | xargs kill -9 >/dev/null 2>&1
+pgrep -a my_start.sh | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
+pgrep -a python | grep sjva.py | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
+pgrep -a filebrowser | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
 sleep 1
 echo "done"
 echo " sjva2 is not running (no process found)..."
 exit 0
 fi
 echo -n " Killing sjva2: "
-"$sjva2_running" | xargs kill -9 >/dev/null 2>&1
-"$python_running"| xargs kill -9 >/dev/null 2>&1
+pgrep -a my_start.sh | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
+pgrep -a python | grep sjva.py | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
+pgrep -a filebrowser | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
 sleep 1
 echo "done"
 ;;

@@ -26,7 +26,7 @@ echo "  done"
 echo "- download ubuntu-eoan image"
 mkdir -p "$dir"
 cd "$dir"
-case arm in
+case `dpkg --print-architecture` in
 aarch64)
 archurl="arm64" ;;
 arm)

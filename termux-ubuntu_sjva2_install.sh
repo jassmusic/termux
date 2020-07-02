@@ -59,6 +59,8 @@ cd SJVA2
 case `dpkg --print-architecture` in
 aarch64)
 archurl="64bit" ;;
+arm64)
+archurl="64bit" ;;
 arm)
 archurl="32bit" ;;
 amd64)

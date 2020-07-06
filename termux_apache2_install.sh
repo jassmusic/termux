@@ -31,9 +31,9 @@ SetHandler application/x-httpd-php\
 <\/FilesMatch>' /data/data/com.termux/files/usr/etc/apache2/httpd.conf
 
 # make symbolic link
-ln -s /data/data/com.termux/files/usr/share/apache2/default-site/htdocs ~/http
+ln -s /data/data/com.termux/files/usr/share/apache2/default-site/htdocs ~/html
 echo ""
 echo " Finish! -- run 'apachectl start'"
 echo "         -- address 'http://your-address:${APACHE_PORT}'"
-echo "         -- based folder '~/http'"
+echo "         -- based folder '~/html'"
 echo ""

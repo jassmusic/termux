@@ -1,13 +1,13 @@
 #!/bin/sh
 
 # Termux-Ubuntu Install
-# made by jassmusic @20.06.22
+# made by jassmusic @20.07.06
 # (modify from Neo-Oli/termux-ubuntu)
 
 echo ""
 echo "-- Termux-Ubuntu Install"
 echo "   from SJVA.me --"
-echo "   version 0.2.6.22"
+echo "   version 0.2.7.06"
 echo ""
 
 cd ~
@@ -82,6 +82,7 @@ command+=" -b /proc"
 command+=" -b /data/data/com.termux/files/home:/termux"
 ## uncomment the following line to mount /sdcard directly to /
 command+=" -b /sdcard"
+command+=" -b /storage"
 command+=" -w /root"
 command+=" /usr/bin/env -i"
 command+=" HOME=/root"

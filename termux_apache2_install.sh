@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Termux Apache2 set
+# Termux Apache2 & php set
 # made by jassmusic @20.07.06
 # auto editing /data/data/com.termux/files/usr/etc/apache2/httpd.conf
 

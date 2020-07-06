@@ -5,7 +5,7 @@
 # auto editing /data/data/com.termux/files/usr/etc/apache2/httpd.conf
 
 # set apache2 port
-PORT=8000
+APACHE_PORT="8000"
 
 # install package
 apt install -y php-apache
@@ -15,7 +15,7 @@ sed -i '/ServerRoot "\/data\/data\/com.termux\/files\/usr"/i \
 ServerName localhost' /data/data/com.termux/files/usr/etc/apache2/httpd.conf
 
 # change port
-sed -i 's/Listen 8080/Listen ${PORT}/' /data/data/com.termux/files/usr/etc/apache2/httpd.conf
+sed -i "s/Listen 8080/Listen ${APACHE_PORT}/" /data/data/com.termux/files/usr/etc/apache2/httpd.conf
 
 # prefork uncomment
 sed -i 's/#LoadModule mpm_prefork_module libexec\/apache2\/mod_mpm_prefork.so/LoadModule mpm_prefork_module libexec\/apache2\/mod_mpm_prefork.so/' /data/data/com.termux/files/usr/etc/apache2/httpd.conf
@@ -32,5 +32,8 @@ SetHandler application/x-httpd-php\
 
 # make symbolic link
 ln -s /data/data/com.termux/files/usr/share/apache2/default-site/htdocs ~/http
-echo " Finish! -- http://your-address:${PORT}"
-echo "    based on '~/http' folder !"
+echo ""
+echo " Finish! -- run 'apachectl start'"
+echo "         -- address 'http://your-address:${APACHE_PORT}'"
+echo "         -- based folder '~/http'"
+echo ""

@@ -10,7 +10,7 @@ APACHE_PORT="8000"
 # install package
 apt install -y php-apache
 
-# add ServerRoot
+# add ServerName
 sed -i '/ServerRoot "\/data\/data\/com.termux\/files\/usr"/i \
 ServerName localhost' /data/data/com.termux/files/usr/etc/apache2/httpd.conf
 

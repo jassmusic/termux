@@ -19,9 +19,10 @@ sed -i '/#ServerRoot "\/etc\/apache2"/i \
 ServerName localhost' /etc/apache2/apache2.conf
 
 # make symbolic link
-ln -s /var/www/html ~/http
+ln -s /var/www/html ~/html
+
 echo ""
 echo " Finish! -- run 'service apache2 start'"
 echo "         -- address 'http://your-address:${APACHE_PORT}'"
-echo "         -- based folder '~/http'"
+echo "         -- based folder '~/html'"
 echo ""

@@ -1,4 +1,5 @@
 # termux
+termux에 유용한 프로그램을 Script로 제공합니다.
 
 ## termux
 - termux_apache2_install.sh : apache2 설치(php포함)

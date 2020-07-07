@@ -1,11 +1,11 @@
 #!/bin/sh
 
 # Termux-Ubuntu Apache2 & php set
-# made by jassmusic @20.07.06
+# made by jassmusic @20.07.07
 # auto editing /etc/apache2/ports.conf
 # auto editing /etc/apache2/apache2.conf
 
-# set apache2 port
+#### set apache2 port what you want
 APACHE_PORT="8000"
 
 # install package

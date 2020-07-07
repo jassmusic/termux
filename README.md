@@ -1,6 +1,6 @@
 # termux
 
-- termux_apache2_install.sh : termux에 apache2를 설치(php포함)
+## termux_apache2_install.sh : termux에 apache2를 설치(php포함)
 - termux-ubuntu_install.sh : termux에 ubuntu-eoan을 설치
 - termux-ubuntu_sjva2_install.sh : termux-ubuntu에 sjva2를 설치
 - termux-ubuntu_apache2_install.sh : termux-ubuntu에 apache2를 설치(php포함)

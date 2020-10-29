@@ -29,6 +29,6 @@ mv my_start_termux-native.sh my_start_termux.sh
 chmod +x my_start_termux.sh
 
 # soju6jan git fork and modification for termux-native
-sqlite3 ~/app/data/db/sjva.db "update system_setting set value='19999' where key='port'"
+#sqlite3 ~/app/data/db/sjva.db "update system_setting set value='19999' where key='port'"
 #git clone https://github.com/jassmusic/nginx ~/app/data/custom/nginx
 #~/app/data/custom/nginx/files/install.sh

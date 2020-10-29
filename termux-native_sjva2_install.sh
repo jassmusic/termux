@@ -22,7 +22,8 @@ curl -LO https://raw.githubusercontent.com/soju6jan/SJVA2/master/bin/LinuxArm/fi
 curl -LO https://raw.githubusercontent.com/soju6jan/SJVA2/master/bin/LinuxArm/rclone
 chmod +x *
 cd ~/app
-curl -LO https://raw.githubusercontent.com/jassmusic/termux/master/my_start_termux.sh
+curl -LO https://raw.githubusercontent.com/jassmusic/termux/master/my_start_termux-native.sh
+mv my_start_termux-native.sh my_start_termux.sh
 chmod +x my_start_termux.sh
 
 # soju6jan git fork and modification for termux-native

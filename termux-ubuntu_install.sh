@@ -1,13 +1,13 @@
 #!/bin/sh
 
 # Termux-Ubuntu Install
-# made by jassmusic @20.07.06
+# made by jassmusic @20.12.24 (eoan EOF 대응)
 # (modify from Neo-Oli/termux-ubuntu)
 
 echo ""
 echo "-- Termux-Ubuntu Install"
 echo "   from SJVA.me --"
-echo "   version 0.2.7.06"
+echo "   version 0.2.12.24"
 echo ""
 
 cd ~
@@ -55,6 +55,7 @@ cat >> etc/resolv.conf << 'EOM'
 nameserver 8.8.8.8
 nameserver 8.8.4.4
 EOM
+sed -i 's,http://ports.ubuntu.com/ubuntu-ports/,http://old-releases.ubuntu.com/ubuntu/,g' etc/apt/sources.list
 rm ${cur}/${tarball}
 echo "  done"
 echo "- make launch script"

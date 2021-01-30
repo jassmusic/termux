@@ -1,0 +1,121 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides: skeleton
+# Required-Start: $remote_fs $syslog
+# Required-Stop: $remote_fs $syslog
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Example initscript
+# Description: This file should be used to construct scripts to be
+# placed in /etc/init.d.
+# Modified by jassmusic
+### END INIT INFO
+port=$1
+port_check=port | sed 's/[0-9]//g'
+green_tunnel_running=`pgrep -a node | awk '{ print $1 }'`
+green_tunnel_running_port=`pgrep -a node | awk '{ print $7 }'`
+case "$1" in
+start)
+if [ -z "$green_tunnel_running" ]; then
+if [ -z "$green_tunnel_running_port" ]; then
+echo "* no port specified, default port is '7000'"
+green_tunnel_port="7000"
+green_tunnel_running_port="7000"
+fi
+echo -n "Starting green-tunnel: "
+su -c "nohup gt --ip 0.0.0.0 --port ${green_tunnel_port} &" >/dev/null 2>&1
+sleep 1
+echo "done"
+else
+echo "green-tunnel already running"
+fi
+echo "* green tunnel running port is '${green_tunnel_running_port}'"
+exit 0
+;;
+stop)
+if [ -z "$green_tunnel_running" ]; then
+echo "green-tunnel is not running (no process found)..."
+else
+echo "* green tunnel running port is '${green_tunnel_running_port}'"
+echo -n "Killing green-tunnel: "
+pgrep -a node | awk '{ print $1 }' | xargs kill -15 >/dev/null 2>&1
+sleep 1
+echo "done"
+fi
+exit 0
+;;
+restart)
+sh $0 stop
+sh $0 start
+;;
+status)
+if [ -z "$green_tunnel_running" ]; then
+echo "It seems that green-tunnel isn't running (no process found)."
+else
+echo "green-tunnel process running."
+echo "* green tunnel running port is '${green_tunnel_running_port}'"
+fi
+exit 0
+;;
+*)
+if [ -z "$port_check" ]; then
+green_tunnel_port=$1
+case "$2" in
+start)
+if [ -z "$green_tunnel_running" ]; then
+green_tunnel_running_port=$1
+echo -n "Starting green-tunnel: "
+su -c "nohup gt --ip 0.0.0.0 --port ${green_tunnel_port} &" >/dev/null 2>&1
+sleep 1
+echo "done"
+else
+echo "green-tunnel already running"
+fi
+echo "* green tunnel running port is '${green_tunnel_running_port}'"
+exit 0
+;;
+stop)
+if [ -z "$green_tunnel_running" ]; then
+echo "green-tunnel is not running (no process found)..."
+else
+echo "* green tunnel running port is '${green_tunnel_running_port}'"
+echo -n "Killing green-tunnel: "
+pgrep -a node | awk '{ print $1 }' | xargs kill -15 >/dev/null 2>&1
+sleep 1
+echo "done"
+fi
+exit 0
+;;
+restart)
+sh $0 stop
+sh $0 ${green_tunnel_port} start
+;;
+status)
+if [ -z "$green_tunnel_running" ]; then
+echo "It seems that green-tunnel isn't running (no process found)."
+else
+echo "green-tunnel process running."
+echo "* green tunnel running port is '${green_tunnel_running_port}'"
+fi
+exit 0
+;;
+*)
+echo "Usage: $0 {port} {start|stop|restart|status}"
+echo "       $0 {start|stop|restart|status}"
+if [ ! -z "$green_tunnel_running" ]; then
+echo "* green tunnel running port is '${green_tunnel_running_port}'"
+fi
+;;
+esac
+exit 0
+else
+echo "Usage: $0 {port} {start|stop|restart|status}"
+echo "       $0 {start|stop|restart|status}"
+if [ ! -z "$green_tunnel_running" ]; then
+echo "* green tunnel running port is '${green_tunnel_running_port}'"
+fi
+exit 1
+fi
+;;
+esac
+exit 0

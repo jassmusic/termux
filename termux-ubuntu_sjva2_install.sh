@@ -78,6 +78,7 @@ fi
 python -m pip install --upgrade pip
 pip install --upgrade setuptools
 pip install -r requirements.txt
+pip install rebulk==2.0.1
 echo " done"
 echo ""
 

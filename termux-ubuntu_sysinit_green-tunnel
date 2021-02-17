@@ -18,9 +18,9 @@ case "$1" in
 start)
 if [ -z "$green_tunnel_running" ]; then
 if [ -z "$green_tunnel_running_port" ]; then
-echo "* no port specified, default port is '8000'"
-green_tunnel_port="8000"
-green_tunnel_running_port="8000"
+echo "* no port specified, default port is '7000'"
+green_tunnel_port="7000"
+green_tunnel_running_port="7000"
 fi
 echo -n "Starting green-tunnel: "
 su -c "nohup gt --ip 0.0.0.0 --port ${green_tunnel_port} &" >/dev/null 2>&1

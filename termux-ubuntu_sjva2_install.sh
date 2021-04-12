@@ -38,19 +38,25 @@ apt -y install ffmpeg
 echo " done"
 echo ""
 
-#echo "(Optional) Rclone setting.."
-#curl https://rclone.org/install.sh | bash
-#echo " done"
-#echo ""
-
-#echo "(Optional) filebrowser setting.."
-#curl -fsSL https://filebrowser.xyz/get.sh | bash
-#echo " done"
-#echo ""
-
 echo "(Step5) SJVA2 Downloading.."
 cd /home
 git clone https://github.com/soju6jan/SJVA2.git
+echo " done"
+echo ""
+
+echo "(Optional) Rclone setting.."
+#curl https://rclone.org/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/wiserain/rclone/mod/install.sh | bash
+mkdir -p /home/SJVA2/bin/LinuxArm
+cp /bin/rclone /home/SJVA2/bin/LinuxArm
+echo " done"
+echo ""
+
+echo "(Optional) filebrowser setting.."
+#curl -fsSL https://filebrowser.xyz/get.sh | bash
+curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash
+mkdir -p /home/SJVA2/bin/LinuxArm
+cp /usr/local/bin/filebrowser /home/SJVA2/bin/LinuxArm
 echo " done"
 echo ""
 
@@ -90,6 +96,10 @@ cat >> my_start.sh << 'EOM'
 if [ ! -f "export.sh" ] ; then
 cat <<EOF >export.sh
 #!/bin/sh
+
+cp /bin/rclone /home/SJVA2/bin/LinuxArm
+cp /usr/local/bin/filebrowser /home/SJVA2/bin/LinuxArm
+
 export REDIS_PORT="46379"
 export USE_CELERY="false"
 export CELERY_WORKER_COUNT="2"
@@ -132,6 +142,8 @@ do
     git pull
     chmod 777 .
     chmod -R 777 ./bin
+    cp /bin/rclone /home/SJVA2/bin/LinuxArm
+    cp /usr/local/bin/filebrowser /home/SJVA2/bin/LinuxArm
 
     if [ ! -f "./data/db/sjva.db" ] ; then
         python -OO sjva.py 0 ${COUNT} init_db

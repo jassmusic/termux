@@ -7,7 +7,7 @@
 echo ""
 echo "-- Termux-Ubuntu Install"
 echo "   from SJVA.me --"
-echo "   version 0.21.2.20"
+echo "   version 21.2.20"
 echo ""
 
 cd ~

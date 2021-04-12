@@ -52,7 +52,8 @@ echo ""
 
 echo "(Optional) filebrowser setting.."
 #curl -fsSL https://filebrowser.xyz/get.sh | bash
-curl -fsSL https://filebrowser.org/get.sh | bash
+#curl -fsSL https://filebrowser.org/get.sh | bash
+curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash
 mkdir -p /home/SJVA2/bin/LinuxArm
 cp /usr/local/bin/filebrowser /home/SJVA2/bin/LinuxArm
 echo " done"

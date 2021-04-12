@@ -41,7 +41,7 @@ echo ""
 
 echo "(Optional) Rclone setting.."
 #curl https://rclone.org/install.sh | bash
-curl -fsSL https://raw.githubusercontent.com/wiserain/rclone/mod/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/wiserain/rclone/mod/install.sh | bash
 mkdir -p /home/SJVA2/bin/LinuxArm
 cp /bin/rclone /home/SJVA2/bin/LinuxArm
 echo " done"

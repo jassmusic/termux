@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# Termux-Ubuntu Install
-# made by jassmusic @20.12.24 (eoan EOF 대응)
+# Termux-Ubuntu_focal
+# made by jassmusic @21.2.20
 # (modify from Neo-Oli/termux-ubuntu)
 
 echo ""

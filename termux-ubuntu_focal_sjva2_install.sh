@@ -62,7 +62,8 @@ echo "(Step6) SJVA2 pip setting.."
 cd SJVA2
 python3 -m pip install --upgrade pip
 pip3 install --upgrade setuptools
-pip3 install -r /home/sjva2_py3_requirements.txt
+curl -LO https://raw.githubusercontent.com/jassmusic/termux/master/termux-native_requirements.txt
+pip3 install -r /home/termux-native_requirements.txt
 echo " done"
 echo ""
 

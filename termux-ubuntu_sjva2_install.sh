@@ -77,8 +77,8 @@ sed -i 's/CFUNCTYPE(c_int)(lambda: None)/#CFUNCTYPE(c_int)(lambda: None)/' /usr/
 fi
 python -m pip install --upgrade pip
 pip install --upgrade setuptools
+pip install guessit==3.0.4 rebulk==2.0.1 rsa==4.5
 pip install -r requirements.txt
-pip install guessit==3.0.4 rebulk==2.0.1
 echo " done"
 echo ""
 

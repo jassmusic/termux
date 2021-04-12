@@ -39,17 +39,17 @@ apt -y install ffmpeg
 echo " done"
 echo ""
 
+echo "(Step5) SJVA2 Downloading.."
+cd /home
+git clone --depth 1 https://github.com/soju6jan/sjva2_src_obfuscate /home/SJVA2
+echo " done"
+echo ""
+
 echo "(Optional) Rclone setting.."
 #curl https://rclone.org/install.sh | bash
 curl -fsSL https://raw.githubusercontent.com/wiserain/rclone/mod/install.sh | bash
 mkdir -p /home/SJVA2/bin/LinuxArm
 cp /bin/rclone /home/SJVA2/bin/LinuxArm
-echo " done"
-echo ""
-
-echo "(Step5) SJVA2 Downloading.."
-cd /home
-git clone --depth 1 https://github.com/soju6jan/sjva2_src_obfuscate /home/SJVA2
 echo " done"
 echo ""
 

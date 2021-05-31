@@ -59,7 +59,7 @@ echo " done"
 echo ""
 
 echo "(Step8) nginx install.."
-apt -y nginx sqlite
+apt -y install nginx sqlite
 service nginx stop
 curl -LO https://raw.githubusercontent.com/jassmusic/termux/master/termux-ubuntu_focal_nginx.conf
 rm /etc/nginx/nginx.conf

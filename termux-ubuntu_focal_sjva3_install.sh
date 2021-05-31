@@ -30,7 +30,7 @@ echo ""
 
 echo "(Step3) Build Package setting.."
 apt -y install python3 python3-pip python3-dev python3-lxml
-apt -y git libffi-dev libxml2-dev libxslt-dev zlib1g-dev libjpeg62-dev
+apt -y install git libffi-dev libxml2-dev libxslt-dev zlib1g-dev libjpeg62-dev
 echo " done"
 echo ""
 

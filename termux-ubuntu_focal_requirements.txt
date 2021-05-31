@@ -41,7 +41,7 @@ sqlitedict==1.7.0
 telepot==12.7
 typing-extensions==3.7.4.3
 tzlocal==2.1
-urllib3==1.26.2
+urllib3==1.26.4
 vine==5.0.0
 wcwidth==0.2.5
 Werkzeug==1.0.1

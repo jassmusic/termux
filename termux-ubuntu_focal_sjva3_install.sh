@@ -269,7 +269,7 @@ cat >> /etc/init.d/sjva3 << 'EOM'
 # Modified by jassmusic @21.5.31
 ### END INIT INFO
 sjva3_running=`pgrep -a my_start.sh | awk '{ print $1 }'`
-python_running=`pgrep -a python3 | grep sjva.py | awk '{ print $1 }'`
+python_running=`pgrep -a python3 | grep sjva3.py | awk '{ print $1 }'`
 case "$1" in
 start)
 if [ -z "$sjva3_running" ] || [ -z "$python_running" ]; then
@@ -287,7 +287,7 @@ stop)
 if [ -z "$sjva3_running" ] || [ -z "$python_running" ] ; then
 echo -n " Checking SJVA3: "
 pgrep -a my_start.sh | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
-pgrep -a python3 | grep sjva.py | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
+pgrep -a python3 | grep sjva3.py | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
 pgrep -a filebrowser | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
 sleep 1
 echo "done"
@@ -296,7 +296,7 @@ exit 0
 fi
 echo -n " Killing SJVA3: "
 pgrep -a my_start.sh | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
-pgrep -a python3 | grep sjva.py | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
+pgrep -a python3 | grep sjva3.py | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
 pgrep -a filebrowser | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
 sleep 1
 echo "done"

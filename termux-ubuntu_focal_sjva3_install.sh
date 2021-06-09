@@ -1,12 +1,11 @@
 #!/bin/sh
 
 # SJVA3 install for Termux-Ubuntu_focal
-# made by jassmusic @21.5.31
+# made by jassmusic @21.6.09
 
 echo ""
 echo "-- SJVA3 Install for Termux-Ubuntu_focal"
-echo "   from SJVA.me--"
-echo "   version 21.5.31"
+echo "   from SJVA.me @21.6.09--"
 echo ""
 sleep 1
 
@@ -29,7 +28,7 @@ echo " done"
 echo ""
 
 echo "(Step3) Build Package setting.."
-apt -y install python3 python3-pip python3-dev python3-lxml
+apt -y install python3 python3-pip python3-dev python3-lxml libboost-python-dev redis #fuse vnstat
 apt -y install git libffi-dev libxml2-dev libxslt-dev zlib1g-dev libjpeg62-dev
 echo " done"
 echo ""
@@ -75,10 +74,20 @@ echo ""
 
 echo "(Step10) SJVA3 pip setting.."
 cd SJVA3
-curl -LO https://raw.githubusercontent.com/jassmusic/termux/master/termux-ubuntu_focal_requirements.txt
 python3 -m pip install --upgrade pip
 pip3 install --upgrade setuptools
-pip3 install -r termux-ubuntu_focal_requirements.txt
+curl -LO https://raw.githubusercontent.com/jassmusic/termux/master/termux-ubuntu_focal_requirements.txt
+pip3 install --no-cache-dir -r termux-ubuntu_focal_requirements.txt
+
+# redis 설정
+#sed -i "s/port 6379/port $REDIS_PORT/g" /etc/redis/redis.conf
+#update-rc.d redis-server defaults
+
+# celery daemon 설정
+#curl -o /etc/init.d/sjva3_celery https://raw.githubusercontent.com/celery/celery/master/extra/generic-init.d/celeryd
+#chmod +x /etc/init.d/sjva3_celery
+#update-rc.d sjva3_celery defaults
+
 echo " done"
 echo ""
 
@@ -117,8 +126,6 @@ PIP="pip3"
 PACKAGE_CMD="apt-get -y --no-install-recommends"
 PS_COMMAND="pgrep -a ''"
 PATH_PREFIX=""
-#=======================================
-PLUGIN_UPDATE_FROM_PYTHON="false"
 #=======================================
 
 if [ ! -f "export.sh" ] ; then
@@ -162,13 +169,15 @@ COUNT=0
 while true;
 do
     source export.sh
-    export PLUGIN_UPDATE_FROM_PYTHON="false"
     if [ "$UPDATE_STOP" == "true" ]; then
         echo "pass git reset !!"
     else
         find $SJVA_HOME/.git -name "index.lock" -exec rm -f {} \;
         git reset --hard HEAD
         git pull
+        echo "ktv patch (파일처리대응)"
+	    sed -i 's/Logic.process_download_file(None)/Logic.process_download_file()/g' /home/SJVA3/plugin/ktv/logic.py
+        echo " done"
         if [ "$PLUGIN_UPDATE_FROM_PYTHON" == "false" ]; then
             echo "PLUGIN_UPDATE_FROM_SCRIPT"
                 echo "plugin update"
@@ -266,7 +275,7 @@ cat >> /etc/init.d/sjva3 << 'EOM'
 # Short-Description: Example initscript
 # Description: This file should be used to construct scripts to be
 # placed in /etc/init.d.
-# Modified by jassmusic @21.5.31
+# Modified by jassmusic @21.6.09
 ### END INIT INFO
 sjva3_running=`pgrep -a my_start.sh | awk '{ print $1 }'`
 python_running=`pgrep -a python3 | grep sjva3.py | awk '{ print $1 }'`
@@ -291,7 +300,7 @@ pgrep -a python3 | grep sjva3.py | awk '{ print $1 }' | xargs kill -9 >/dev/null
 pgrep -a filebrowser | awk '{ print $1 }' | xargs kill -9 >/dev/null 2>&1
 sleep 1
 echo "done"
-echo " sjva2 is not running (no process found)..."
+echo " SJVA3 is not running (no process found)..."
 exit 0
 fi
 echo -n " Killing SJVA3: "
@@ -330,7 +339,7 @@ rm -f ~/.bash_profile
 cat >> ~/.bash_profile << 'EOF'
 echo ""
 echo "Welcome to Termux Ubuntu!"
-echo "e.g) SJVA manual instruction"
+echo "e.g) SJVA3 manual instruction"
 echo "     service sjva3 start"
 echo "     service sjva3 stop"
 echo "     service sjva3 restart"

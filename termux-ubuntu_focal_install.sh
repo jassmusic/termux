@@ -1,13 +1,12 @@
 #!/bin/sh
 
 # Termux-Ubuntu_focal
-# made by jassmusic @21.2.20
+# made by jassmusic @21.6.09
 # (modify from Neo-Oli/termux-ubuntu)
 
 echo ""
-echo "-- Termux-Ubuntu Install"
-echo "   from SJVA.me --"
-echo "   version 21.2.20"
+echo "-- Termux-Ubuntu_focal Install"
+echo "   from SJVA.me @21.6.09 --"
 echo ""
 
 cd ~
@@ -57,6 +56,11 @@ nameserver 8.8.4.4
 EOM
 #sed -i 's,http://ports.ubuntu.com/ubuntu-ports/,http://old-releases.ubuntu.com/ubuntu/,g' etc/apt/sources.list
 rm ${cur}/${tarball}
+echo "  done"
+echo "- change sources.list"
+curl -LO https://raw.githubusercontent.com/jassmusic/termux/master/termux-ubuntu_focal_sources.list
+rm -f /data/data/com.termux/files/home/${dir}/${folder}/etc/apt/sources.list
+mv termux-ubuntu_focal_sources.list /data/data/com.termux/files/home/${dir}/${folder}/etc/apt/sources.list
 echo "  done"
 echo "- make launch script"
 cd "$cur"

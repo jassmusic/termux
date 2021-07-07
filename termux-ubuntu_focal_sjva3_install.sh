@@ -5,7 +5,7 @@
 
 echo ""
 echo "-- SJVA3 Install for Termux-Ubuntu_focal"
-echo "   from SJVA.me @21.6.09--"
+echo "   from SJVA.me @21.7.7--"
 echo ""
 sleep 1
 
@@ -46,7 +46,8 @@ echo ""
 
 echo "(Step6) filebrowser setting.."
 #curl -fsSL https://filebrowser.xyz/get.sh | bash
-curl -fsSL https://filebrowser.org/get.sh | bash
+#curl -fsSL https://filebrowser.org/get.sh | bash
+curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash
 echo " done"
 echo ""
 

@@ -1,0 +1,465 @@
+#!/bin/sh
+# Linux Utility:  plexmediaserver.postinst
+# Description:    Install or upgrade PMS on this host.  Verify configuration is runnable while upgrading
+# Author:         Plex
+
+# Support Functions
+# Function to output to log and console.
+#
+# Usage:
+#   $1 =  Message (should be "Text Message" quoted).
+#   $2 =  Optional "0" or "1" flag.   "1" adds "(extracted from Preferences.xml)" message
+#
+#   Note: Blank lines (Null text strings "") are not written to the system log.  There is no need to waste that space.
+Output() {
+
+  # Prepare base message
+  Message="PlexMediaServer install: $1"
+
+  # Add supplemental information for special case of preferences.xml
+  if [ "$2" = "1" ]; then
+    Message="$Message (set in Preferences.xml)"
+  fi
+
+  # Output the message even if a blank message (make output nice)
+  echo "$Message"
+
+  # Return if blank.
+  if [ "$1" = "" ]; then
+    return
+  fi
+
+  # Output to log
+  if [ $Systemd -eq 1 ]; then
+    echo MESSAGE="$Message" | logger --journald
+  else
+    echo "$Message" | logger
+  fi
+}
+
+
+# Load configuration variable values from configuration transfer file as needed
+GetConfig() {
+
+  RetVal=""
+  RetVal="$(grep ^$1= /tmp/plexinstaller.log | sed -e 's/^.*=//'| tr -d '"')"
+
+  echo "$RetVal"
+}
+
+
+# Installation default values
+# Set Default values then load host customizations (if present)
+
+# Runtime Environments
+Init=0                                                            # True if Init system
+Systemd=0                                                         # True if Systemd system
+
+# PMS default installation values
+PlexUser=plex                                                     # Default PMS user
+PlexGroup=plex                                                    # Default PMS group
+AppSuppDir="/var/lib/plexmediaserver/Library/Application Support" # Default location for "Plex Media Server"
+PlexTempDir="/tmp"                                                # Default temporary transcoding directory
+LangEncoding="en_US.UTF-8"                                        # Character set and language encoding
+VideoGroup=video                                                  # Default udev group
+
+# Process Control Variables
+Errors=0                                                          # Number of Errors
+ExistingVersion=0                                                 # Currently installed PMS version
+Fail=0                                                            # True if critical errors detected.
+HaveTranscoderPref=0                                              # True if TranscoderTempDir used from Preferences.xml
+NeedGroup=1                                                       # Need the group created
+NeedUser=1                                                        # Need the username added
+OverrideFile=""                                                   # Path to override file we are using, if any
+Verbose=1                                                         # Output error messages
+Warnings=0                                                        # Number of Warnings
+
+
+
+# exit on major error
+set -e
+
+# If the file does not exist,  there is nothing for us to do.
+if [ ! -e "/tmp/plexinstaller.log" ]; then
+
+  # This distro allows DPKG to continue if errors in preinst (which block this file being written).
+  # silently exit with error as well.
+  exit 1
+fi
+
+# If this is a Docker, exit now.  No additional processing is necessary
+if [ "$(grep docker /proc/1/cgroup | wc -l)" -gt 0 ]; then
+
+  Output "Docker detected. Postinstallation tasks not required. Continuing."
+  exit 0
+fi
+
+# If this is a Custom installation, exit now.  No additional processing is necessary
+if [ "$(GetConfig Custom)" = "1" ]; then
+  Output "Custom environment detected.  Skipping postinstallation tasks. Continuing."
+  exit 0
+fi
+
+# Get this file version:
+PMSver="$(head -1 /usr/share/doc/plexmediaserver/README.Debian | awk -F: '{print $2}' | sed -e 's/^ //')"
+
+# Incorporate preinstallation errors and warnings counters
+Errors="$(GetConfig Errors)"
+Warnings="$(GetConfig Warnings)"
+
+
+# Timestamp start of PMS installation
+Output "$PMSver - Installation starting."
+
+# Write to installation information
+if [ $Verbose -eq 1 ]; then
+  Output ""
+
+  Output "Now installing based on:"
+
+  # New or Update
+  if [ "$(GetConfig NewInstall)" = "1" ]; then
+    Output "  Installation Type:   New"
+  else
+    Output "  Installation Type:   Update"
+  fi
+
+  # Determine if init or systemd installation
+  #Init="$(GetConfig Init)"
+  Init=1
+  #Systemd="$(GetConfig Systemd)"
+
+  if [ $Init = "1" ]; then
+    Output "  Process Control:     init"
+  else
+    Output "  Process Control:     systemd"
+  fi
+
+  # Get the values
+  PlexUser="$(GetConfig PlexUser)"
+  PlexGroup="$(GetConfig PlexGroup)"
+  VideoGroup="$(GetConfig VideoGroup)"
+  AppSuppDir="$(GetConfig AppSuppDir)"
+  PlexTempDir="$(GetConfig PlexTempDir)"
+  HaveTranscoderPref="$(GetConfig HaveTranscoderPref)"
+  LangEncoding="$(GetConfig LangEncoding)"
+
+  Output "  Plex User:           $PlexUser"
+  Output "  Plex Group:          $PlexGroup"
+  Output "  Video Group:         $VideoGroup"
+  Output "  Metadata Dir:        $AppSuppDir"
+  Output "  Temp Directory:      $PlexTempDir " "$HaveTranscoderPref"
+  Output "  Lang Encoding:       $LangEncoding"
+
+
+  if [ "$(GetConfig HaveOverride)" = "1" ]; then
+    OverrideFile="$(GetConfig OverrideFile)"
+    Output "  Config file used:    $OverrideFile"
+  fi
+
+  # Has transcoding hardware been found?
+  if [ "$(GetConfig HaveHardware)" = "1" ]; then
+    Output "  Transcoding HW:      Found"
+  else
+    Output "  Transcoding HW:      Not found"
+  fi
+
+  Output ""
+
+fi
+
+# Inform:
+Output "Completing final configuration."
+
+# Do we need to create the Plex user
+NeedUser="$(GetConfig NeedUser)"
+
+# Setup the Plex user (plex:plex) which are basic requirements for when override removed.
+if [ "$NeedUser" = "1" ] || [ "$(getent passwd "plex" | wc -l)" -eq 0 ]; then
+
+  # Locate 'nologin'
+  NoLogin="/no-plex-login"
+
+  if   [ -e /usr/sbin/nologin ]; then
+    NoLogin="/usr/sbin/nologin"
+  elif [ -e /bin/nologin ]; then
+    NoLogin="/bin/nologin"
+  elif [ -e /usr/bin/nologin ]; then
+    NoLogin="/usr/bin/nologin"
+  elif [ -e /sbin/nologin ]; then
+    NoLogin="/sbin/nologin"
+  fi
+
+  # Add the user account, system account, no shell
+  useradd --system --shell $NoLogin --home /var/lib/plexmediaserver "plex"
+
+  # Use status return from "useradd" to tell us if successful. This is also the error code.
+  if [ $? -ne 0 ]; then
+    Output "ERROR: Cannot create user \"plex\".  Error:  $?"
+    Errors=$((Errors + 1))
+    Fail=1
+  fi
+
+  NeedGroup=0
+fi
+
+# Catch cases where 'plex' has been incorrectly hand created or is damaged
+if [ "$NeedGroup" = "1" ] && [ "$(getent group "plex" | wc -l)" -eq 0 ]; then
+  groupadd --system "plex"
+  if [ $? -ne 0 ]; then
+    Output "ERROR: Cannot create group: plex.  Error:  $?"
+    Errors=$((Errors + 1))
+    Fail=1
+  fi
+
+  # Reattach plex to plex
+  usermod -g plex plex
+  if [ $? -ne 0 ]; then
+    Output "ERROR: Cannot reattach group plex to user plex. Error:  $?"
+    Output "       This should never happen.   Please seek assistence in our Support Forums."
+    Errors=$((Errors + 1))
+    Fail=1
+  fi
+fi
+
+# Check video
+# If the default group for video devices isn't video we join that group
+# instead of our default (video) group. Be careful not to join the "root" group
+
+# Do we need to join the video group?
+if [ "$(GetConfig NeedVideo)" = "1" ]; then
+
+  # Which group are we joining.
+  VideoGroup="$(GetConfig VideoGroup)"
+  if [ "$(getent group "$VideoGroup" | grep "$VideoGroup" | wc -l)" -gt 0 ]; then
+    if [ "$(groups "$PlexUser" | grep "$VideoGroup" | wc -l)" -eq 0 ]; then
+      usermod -a -G "$VideoGroup" "$PlexUser"
+      if [ $? -ne 0 ]; then
+        Output "ERROR: Cannot add '$PlexUser' to video group '$VideoGroup'. Error:  $?"
+        Errors=$((Errors + 1))
+        Fail=1
+      fi
+    fi
+  fi
+fi
+
+# If default directories aren't there,  create them (Presence always required, even if empty)
+if [ ! -d "/var/lib/plexmediaserver/Library/Application Support" ]; then
+
+  # Make the PMS directory
+  mkdir -p "/var/lib/plexmediaserver/Library/Application Support/Plex Media Server"
+  if [ $? -ne 0 ]; then
+    Output "ERROR: Cannot create required directory '/var/lib/plexmediaserver/Library/Application Support/Plex Media Server' Error:  $?"
+    Errors=$((Errors + 1))
+    Fail=1
+  fi
+
+  # Set ownership of all to plex:plex
+  chown -R plex:plex /var/lib/plexmediaserver
+  if [ $? -ne 0 ]; then
+    Output "ERROR: Cannot set ownership of '/var/lib/plexmediaserver' to user 'plex:plex'. Error:  $?"
+    Errors=$((Errors + 1))
+    Fail=1
+  fi
+fi
+
+# Configure for udev if present but warn if not. (HW Transcoding and USB tuners)
+# Is udev installed?
+if [ -d /lib/udev/rules.d ]; then
+
+  # Look for udevadm in the reasonable places
+  UDEVCMD=""
+
+  # Where is udevadm?
+  if   [ -f /bin/udevadm ]; then
+    UDEVCMD=/bin/udevadm
+  elif [ -f /usr/bin/udevadm ]; then
+    UDEVCMD=/usr/bin/udevadm
+  elif [ -f /sbin/udevadm ]; then
+    UDEVCMD=/sbin/udevadm
+    elif [ -f /usr/sbin/udevadm ]; then
+    UDEVCMD=/usr/sbin/udevadm
+
+  fi
+
+  # Continue udev setup if it exists
+  if [ "$UDEVCMD" != "" ]; then
+
+    # Write the udev rule and trigger for any already inserted USB device. Modern distros do not have this problem.
+    # Functionality not impaired for users of HDHomeRun / network tuners.
+    # Write custom video udev rule for the VideoGroup
+
+    # Set generic udev rule for USB tuners
+    echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="1d19", ATTRS{idProduct}=="0100", GROUP="video", MODE="0664"' > /lib/udev/rules.d/60-tv-butler.rules
+
+    # Construct the DRM subsystem rule based on local configuration.
+    echo 'SUBSYSTEM=="drm",' GROUP=\"$VideoGroup\" ', MODE="0660"' > /lib/udev/rules.d/60-plex-hw-transcoding.rules
+
+    # Reload and trigger unless in a Linux Container (known udev bug)
+    if [ "$(GetConfig LinuxContainer)" = "1" ]; then
+      $UDEVCMD control --reload-rules
+      $UDEVCMD trigger
+    fi
+  fi
+
+else
+  Output "Info:  'udev' not found.  Please install if you intend to use USB tuners."
+fi
+
+# If any errors occurred above,  exit now before we start final configuration.
+# To this point, we've only added the Plex user, group and directory
+if [ $Fail -eq 1 ]; then
+  # Inform the user we terminated startup configuration
+  Output "Plex Media Server: ver $PMSver - Installation failed. Final configuration not performed."
+  Output "Assistance is available in our Support Forums."
+  Fail=1
+  Errors=$((Errors + 1))
+fi
+
+# setup autostart for init or systemd as appropriate and restart
+if [ "$Init" = "1" ] && [ $Fail -eq 0 ]; then
+
+  # Copy the service control file: /etc/init.d/plexmediaserver
+  if [ -e /etc/init.d/plexmediaserver ]; then
+    if [ -e /etc/init.d/plexmediaserver.prev ]; then
+      rm -f /etc/init.d/plexmediaserver.prev
+    fi
+    mv -f /etc/init.d/plexmediaserver /etc/init.d/plexmediaserver.prev
+  fi
+  cp /usr/lib/plexmediaserver/lib/plexmediaserver.init /etc/init.d/plexmediaserver
+  chmod +x /etc/init.d/plexmediaserver
+
+  # Give the user a customization template if one not already present
+  if [ ! -e /etc/default/plexmediaserver ]; then
+    cp /usr/lib/plexmediaserver/lib/plexmediaserver.default /etc/default/plexmediaserver
+    chmod +x /etc/default/plexmediaserver
+  fi
+
+  # setup RC files
+  if [ -e /usr/sbin/update-rc.d ]; then
+
+    /usr/sbin/update-rc.d plexmediaserver defaults
+    if [ $? -ne 0 ]; then
+      Output "Startup configuration (update-rc.d) failed. Please see /etc/init.d/plexmediaserver and the system log. Error:  $?"
+      Fail=1
+      Errors=$((Errors + 1))
+    fi
+
+  else
+    # Don't have update-rc.d so can't configure. This is a non-fatal error.
+    Output "ERROR:  Required file '/usr/sbin/update-rc.d' not found."
+    Output "        Plex Media Server installed but final startup configuration was not completed."
+    Output "        Aborting."
+    Fail=1
+    Errors=$((Errors + 1))
+  fi
+
+  # Output final message
+  if [ $Fail -eq 0 ]; then
+    Output "$PMSver - Installation successful."
+
+    if [ "$(GetConfig Running)" = "1" ] || [ "$(GetConfig NewInstall)" = "1" ]; then
+      /etc/init.d/plexmediaserver start
+      if [ $? -ne 0 ]; then
+        Output "Installation successful but startup has failed.   Please see 'service plexmediaserver status' for details.  Error: $?"
+        Output "Additional assistance and support is available in our forums."
+        Fail=1
+        Errors=$((Errors + 1))
+      fi
+    fi
+  fi
+
+# This is a systemd system. Install the service file and get going.
+elif [ "$Systemd" = "1" ] && [ $Fail -eq 0 ]; then
+
+  # Install the service file
+  cp -f /usr/lib/plexmediaserver/lib/plexmediaserver.service /lib/systemd/system/plexmediaserver.service
+  chmod 644 /lib/systemd/system/plexmediaserver.service
+
+  # Add PMS SELinux policy file if SELinux is present and not disabled.
+  if [ -e /usr/sbin/getenforce ] && \
+     [ "$(/usr/sbin/getenforce | grep -ic disabled)" -ne 0 ] && \
+     [ -e /usr/lib/plexmediaserver/plexrsync.pp ]; then
+
+    semodule -i /usr/lib/plexmediaserver/plexrsync.pp
+    if [ $? -ne 0 ]; then
+      Output "Error installing SELinux policy file. Non-fatal Error: $?  Continuing."
+      Errors=$((Errors + 1))
+    fi
+  fi
+
+  # Reload the service file
+  systemctl daemon-reload
+
+  # If a new installation,  setup everything
+  if [ "$(GetConfig NewInstall)" = "1" ]; then
+
+    # Enable
+    systemctl enable plexmediaserver
+    if [ $? -ne 0 ]; then
+      Output "Cannot enable Plex Media Server for automatic start.  Service configuration failure. Error:  $?"
+      Output "Additional assistance and support is available in our forums."
+      Errors=$((Errors + 1))
+      Fail=1
+    fi
+
+    # Start PMS
+    systemctl start plexmediaserver
+    if [ $? -ne 0 ]; then
+      Output "Cannot start Plex Media Server.  Service configuration failure. Error:  $?"
+      Output "Additional assistance and support is available in our forums."
+      Errors=$((Errors + 1))
+      Fail=1
+    fi
+
+  else # Upgrade/Update
+
+    # Which version are we using
+    ExistingVersion="$(GetConfig ExistingVersion)"
+
+    # If version previously installed is less than 1.18.5, force enable service for backward compatibility
+    if [ $ExistingVersion -lt 11805 ]; then
+      systemctl enable plexmediaserver
+    fi
+
+    # Warn user if service is disabled
+    if [ "$(systemctl is-enabled plexmediaserver)" = "disabled" ]; then
+      Output "INFO: Plex Media Server is not enabled to start at system boot."
+    fi
+
+    # Re-start if we had to rebuild in any way, were previously running, or upgrading from pre-1.18.5.
+    if [ "$(GetConfig NewInstall)" = "1" ] || \
+       [ "$(GetConfig Running)"    = "1" ] || \
+       [ $ExistingVersion      -lt 11805 ]; then
+
+      # (re)start PMS
+      Output "Starting Plex Media Server."
+      systemctl start plexmediaserver
+
+      # Make certain it started
+      if [ "$(systemctl status plexmediaserver | grep -i failure)" != "" ]; then
+        Output both "Installation successful but startup has failed.   Please see 'systemctl status plexmediaserver' for details."
+        Output user "Additional assistance and support is available in our forums."
+        Errors=$((Errors + 1))
+      fi
+    fi
+  fi
+
+  # Output final message
+  if [ $Fail -eq 0 ]; then
+    Output "$PMSver - Installation successful.  Errors: $Errors, Warnings: $Warnings"
+    exit 0
+  else
+    Output "$PMSver - Installation failed.  Errors: $Errors, Warnings: $Warnings"
+    Output "Additional assistance and support is available in our forums."
+    exit 1
+  fi
+
+
+else
+
+  # Reaching this point is inpossible unless user hand-crafted the log file then ran plexmediaserver.postinst manually.  Error.
+  Output both "Installation aborted. Catastrophic failure during installation.  Please save file: \"/tmp/plexinstaller.log\" and seek help in our Support Forums."
+  exit 255
+
+fi

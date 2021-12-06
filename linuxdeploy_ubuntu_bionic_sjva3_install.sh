@@ -4,7 +4,7 @@
 # made by jassmusic @21.10.11
 
 echo ""
-echo "-- SJVA3 Install for Termux-Ubuntu_focal"
+echo "-- SJVA3 Install for Linux Deploy Ubuntu bionic"
 echo "   from SJVA.me @21.10.11--"
 echo ""
 sleep 1

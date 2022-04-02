@@ -69,7 +69,7 @@ echo ""
 
 echo "(Step9) SJVA3 Downloading.."
 cd /home
-git clone --depth 1 git://github.com/soju6jan/SJVA3.git /home/SJVA3
+git clone --depth 1 https://github.com/soju6jan/SJVA3.git /home/SJVA3
 echo " done"
 echo ""
 
@@ -118,7 +118,7 @@ SJVA_HOME=/home/SJVA3
 DIR_DATA=$SJVA_HOME/data
 PROGRAM_PATH=$DIR_DATA/programs
 DIR_BIN=/usr/bin
-GIT="git://github.com/soju6jan/SJVA3.git"
+GIT="https://github.com/soju6jan/SJVA3.git"
 #=======================================
 SCRIPT_TYPE="ubuntu"
 SCRIPT_VERSION="1.0.5"
@@ -175,6 +175,7 @@ do
     else
         find $SJVA_HOME/.git -name "index.lock" -exec rm -f {} \;
         git reset --hard HEAD
+	git remote set-url origin $GIT
         git pull
         echo "ktv patch (파일처리대응)"
 	    sed -i 's/Logic.process_download_file(None)/Logic.process_download_file()/g' /home/SJVA3/plugin/ktv/logic.py

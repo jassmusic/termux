@@ -1,4 +1,4 @@
-aiohttp==3.7.3
+aiohttp==3.8.1
 amqp==5.0.2
 anytree==2.8.0
 APScheduler==3.6.3

@@ -93,7 +93,7 @@ wcwidth==0.2.5
 webencodings==0.5.1
 websocket-client==0.57.0
 Werkzeug==1.0.1
-wheel==0.36.2
+wheel==0.38.1
 yarl==1.6.3
 youtube-dl==2021.5.16
 zope.event==4.5.0
